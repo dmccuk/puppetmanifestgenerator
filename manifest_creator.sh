@@ -17,7 +17,7 @@ while read NAME LOCATION; do
   echo > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
   sed -i -e '/mtime/d;/ctime/d;/md5/d;/type/d;/sel*/d' $FS/manifests/init.pp
-  sed -i "$ i\  content  => template(\"$NAME/templates/$NAME.erb\")" $FS/manifests/init.pp
+  sed -i "$ i\  content  => template(\"$NAME/$NAME.erb\")" $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
   sed -i "1 i class $NAME {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp

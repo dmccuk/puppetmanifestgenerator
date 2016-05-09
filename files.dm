@@ -5,3 +5,4 @@ sshd_config /etc/ssh/sshd_config
 sysctl /etc/sysctl.conf
 limits /etc/security/limits.conf
 hosts /etc/hosts
+test /var/tmp/test.dm
