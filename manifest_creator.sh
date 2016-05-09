@@ -43,9 +43,25 @@ create_apply_file()
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST/apply.pp
 for i in `ls /opt/$HOST`; do echo "puppet apply --modulepath=/opt/$HOST -e \"include $i\"" >> /opt/$HOST/apply.pp; done
 sed -i -e '/apply.pp/d' /opt/$HOST/apply.pp
+}
 
+replace_hostname_with_facter()
+{
+for i in `find /opt/$HOST/ -name *.erb`
+do
+grep $HOST $i
+  if [ $? == 0 ] ; then
+    sed -i -e "s/$HOST/<%= @hostname %>/g" $i
+  fi
+done
+}
+
+replace_ipaddress_with_facter()
+{
+# adding soon
 }
 
 directory_framework
 services_packages
 create_apply_file
+replace_hostname_with_facter
