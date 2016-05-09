@@ -27,4 +27,12 @@ I assume you have git installed already.
       * The manifests will be created under this DIR.
       * an "apply.pp" script will be created that you can run to apply the maifest back to the server.
 
+Development
+===========
+
+Plans are to add the following:
+
+ * Data abstraction of IP addresses and hostnames
+  * Us facter to replace any hostnames and IP addresses so the modules could be run on any server.
+
 Please feel free to clone or update 
