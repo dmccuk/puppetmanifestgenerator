@@ -16,7 +16,7 @@ while read NAME LOCATION; do
   cat $LOCATION > $FS/templates/$NAME".erb"
   echo > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
-  sed -i -e '/mtime/d;/ctime/d;/md5/d;/type/d;/sel*/d' $FS/manifests/init.pp
+  sed -i -e '/mtime/d;/ctime/d;/md5/d;/type/d;/sel/d' $FS/manifests/init.pp
   sed -i "$ i\  content  => template(\"$NAME/$NAME.erb\")" $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
   sed -i "1 i class $NAME {" $FS/manifests/init.pp
@@ -38,5 +38,14 @@ while read NAME PACKAGE; do
 done <$SERVICES
 }
 
+create_apply_file()
+{
+echo "#Execute this file to apply back the manifest locally" > /opt/$HOST/apply.pp
+for i in `ls /opt/$HOST`; do echo "puppet apply --modulepath=/opt/$HOST -e \"include $i\"" >> /opt/$HOST/apply.pp; done
+sed -i -e '/apply.pp/d' /opt/$HOST/apply.pp
+
+}
+
 directory_framework
 services_packages
+create_apply_file
