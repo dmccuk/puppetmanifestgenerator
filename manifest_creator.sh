@@ -4,6 +4,7 @@
 # for local files.
 
 FILES=files_managed_by_templates.dm
+FILE_LINE=files_managed_by_file_line.dm
 SERVICES=services_packages.dm
 HOST=`/bin/uname -n`
 
@@ -22,6 +23,27 @@ while read NAME LOCATION; do
   sed -i "1 i class $NAME {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
 done <$FILES
+}
+
+create_file_line_framework()
+{
+while read NAME1 LOCATION1; do
+  FS="/opt/$HOST/$NAME1"
+  mkdir -p $FS/manifests
+  echo > $FS/manifests/init.pp
+  grep -vE '^(\s*$|#)' $LOCATION1| while read line
+    do
+      FIRST=`echo $line | awk '{print $1}'`
+      echo "  file_line{'/etc/sysctl.conf $FIRST':" >> $FS/manifests/init.pp
+      echo "    path  => '$LOCATION1'," >> $FS/manifests/init.pp
+      echo "    line  => '$line'," >> $FS/manifests/init.pp
+      echo "    match => '^$FIRST'," >> $FS/manifests/init.pp
+      echo "  }" >> $FS/manifests/init.pp
+      echo "" >> $FS/manifests/init.pp
+    done
+  sed -i "1 i class $NAME1 {" $FS/manifests/init.pp
+  echo "}" >> $FS/manifests/init.pp
+done <$FILE_LINE
 }
 
 services_packages()
@@ -53,7 +75,6 @@ echo "#Add this role to your puppet master. Either in hiera or the tool you use 
 for i in `ls /opt/$HOST`; do echo "  include $i" >> $ROLE/init.pp; done
 sed -i -e "/apply.pp/d;/role_$HOST/d" $ROLE/init.pp
 sed -i "2 i class role_$HOST { \n" $ROLE/init.pp
-sed -i 's/-/_/g' $ROLE/init.pp
 echo "}" >> $ROLE/init.pp
 }
 
@@ -70,6 +91,7 @@ done
 
 
 directory_framework
+create_file_line_framework
 services_packages
 create_apply_file
 replace_hostname_with_facter
