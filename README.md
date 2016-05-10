@@ -1,20 +1,23 @@
-Welcome to the puppet manifest creator
-======================================
+puppet manifest creator
+=======================
 
 * I'm developing this script with the main focus of trying to manage legacy servers that weren't built by puppet.
 
-It's useful for the following
------------------------------
-
+Use case
+--------
  1. Quickly creating a manifest of your exisiting servers
  2. Locally apply the manifest back via cron from the apply.pp fine created (user setup required).
  3. Move the manifest (under the server name) into a puppet master. Set the role to the servername.
  4. Create/rebuild legacy servers based on this manifest
 
+changelog
+---------
+[ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
+
 Usage
 -----
 
-I assume you have git installed already.
+I assume you have git installed already and a newish version of puppet.
 
  1. Clone the Repo - git clone https://github.com/dmccuk/puppet_legacy_manifest.git
  2. cd into the cloned directory. Examples in each of the files described below:
@@ -32,7 +35,9 @@ Development
 
 Plans are to add the following:
 
- * Data abstraction of IP addresses and hostnames
-  * Us facter to replace any hostnames and IP addresses so the modules could be run on any server.
+ * Data abstraction of IP addresses
+  * Us facter to replace any host IP addresses so the modules could be run on any server.
+  * Add a file_line option so not all files are managed by templates. This givs much greater flexibility in how to manage code with the manifest creator script.
+  * Add metadata.json file
 
 Please feel free to clone or update 
