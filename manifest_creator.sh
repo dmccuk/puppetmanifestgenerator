@@ -7,13 +7,13 @@ FILES=files_managed_by_templates.dm
 FILE_LINE=files_managed_by_file_line.dm
 SERVICES=services_packages.dm
 HOST=`/bin/uname -n`
-HOST_=`cat /tmp/hostname.dm`
 
 hostname_remove_any-()
 {
 # Remove any - from the servername and change them to _
 echo $HOST > /tmp/hostname.dm
 sed -i 's/-/_/g' /tmp/hostname.dm
+HOST_=`cat /tmp/hostname.dm`
 }
 
 
