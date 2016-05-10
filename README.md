@@ -3,9 +3,8 @@ puppet manifest creator
 
 * I'm developing this script with the main focus of trying to manage legacy servers that weren't built by puppet.
 
-It's useful for the following
------------------------------
-
+Use case
+--------
  1. Quickly creating a manifest of your exisiting servers
  2. Locally apply the manifest back via cron from the apply.pp fine created (user setup required).
  3. Move the manifest (under the server name) into a puppet master. Set the role to the servername.
