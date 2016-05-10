@@ -15,8 +15,9 @@ Changelog
  * [ Created a role that can be run on a puppet master based on the files managed by the script ]
  * [ Added the ability to create a "file_line" managed config file in addition to a template ]
  * [ catered for hostnames with - and changed them to _ ]
+ * [ Added fstab (mount) as a defualt option. It doesn't need to be added to any configs ]
 
-Dependancies
+Dependencies
 ------------
  * To use file_line, download puppetlabs-stdlib to the /opt/HOST_ directory.
  * Puppet version 3.0 or above

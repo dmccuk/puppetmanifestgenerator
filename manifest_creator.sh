@@ -16,6 +16,19 @@ sed -i 's/-/_/g' /tmp/hostname.dm
 HOST_=`cat /tmp/hostname.dm`
 }
 
+default()
+{
+# The following are captured by default
+  FSTAB="/opt/$HOST_/fstab"
+  mkdir -p $FSTAB/manifests
+  echo > $FSTAB/manifests/init.pp
+  puppet resource mount >> $FSTAB/manifests/init.pp
+  sed -i 's/^/  /' $FSTAB/manifests/init.pp
+  sed -i "1 i class fstab {" $FSTAB/manifests/init.pp
+  sed -i -e '/binfmt_misc/,+3d' $FSTAB/manifests/init.pp
+  echo "}" >> $FSTAB/manifests/init.pp
+}
+
 
 # Create the directory framework.
 directory_framework()
@@ -42,7 +55,7 @@ while read NAME1 LOCATION1; do
   echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
     do
-      r=$(( $RANDOM % 10 + 40 ))
+      r=$(( $RANDOM % 20 + 50 ))
       FIRST=`echo $line | awk '{print $1}'`
       echo "  file_line{'$LOCATION1 $FIRST.$r':" >> $FS/manifests/init.pp
       echo "    path  => '$LOCATION1'," >> $FS/manifests/init.pp
@@ -99,12 +112,11 @@ grep $HOST $i
 done
 }
 
-
 hostname_remove_any-
+default
 directory_framework
 create_file_line_framework
 services_packages
 create_apply_file
 replace_hostname_with_facter
 create_role
-
