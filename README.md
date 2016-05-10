@@ -9,12 +9,12 @@ Use case
  3. Move the manifest (under the server name) into a puppet master. Set the role and manage with your master.
  4. Create/rebuild legacy servers based on the manifest you create.
 
-changelog
+Changelog
 ---------
-[ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
-[ Created a role that can be run on a puppet master based on the files managed by the script ]
-[ Added the ability to create a "file_line" managed config file in addition to a template ]
-[ catered for hostnames with - and changed them to _ ]
+ * [ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
+ * [ Created a role that can be run on a puppet master based on the files managed by the script ]
+ * [ Added the ability to create a "file_line" managed config file in addition to a template ]
+ * [ catered for hostnames with - and changed them to _ ]
 
 Dependancies
 ------------
@@ -24,9 +24,6 @@ Dependancies
 
 Usage
 -----
-
-I assume you have git installed already and a newish version of puppet.
-
  1. Clone the Repo - git clone https://github.com/dmccuk/puppet_legacy_manifest.git
  2. cd into the cloned directory. Examples in each of the files described below:
       * Update "files_managed_by_templates.dm" with the name and location of what you want to manage.
@@ -42,14 +39,11 @@ I assume you have git installed already and a newish version of puppet.
 
 Development
 ===========
-
 Plans are to add the following:
 
   * Data abstraction of IP addresses where appropiate.
   * Cater for user defined "users" to be captured by the script and added into the manifest.
   * Add metadata.json file to all manifests.
-
-Please feel free to clone or update 
 
 Issues:
 ------
