@@ -14,6 +14,7 @@ changelog
 ---------
 [ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
 [ Created a role that can be run on a puppet master based on the files managed by the script ]
+[ Added the ability to create a "file_line" managed config file in addition to a template ]
 
 Usage
 -----
@@ -39,7 +40,7 @@ Development
 Plans are to add the following:
 
   * Data abstraction of IP addresses where appropiate.
-  * Add a file_line option to allow specific config management.
+  * Cater for user defined "users" to be captured by the script and added into the manifest.
   * Add metadata.json file to all manifests.
 
 Please feel free to clone or update 
