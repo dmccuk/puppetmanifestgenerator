@@ -3,11 +3,6 @@ puppet manifest creator
 
 * I'm developing this script with the main focus of trying to manage legacy servers that weren't built by puppet.
 
-changelog
----------
-
-[ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
-
 It's useful for the following
 -----------------------------
 
@@ -15,6 +10,10 @@ It's useful for the following
  2. Locally apply the manifest back via cron from the apply.pp fine created (user setup required).
  3. Move the manifest (under the server name) into a puppet master. Set the role to the servername.
  4. Create/rebuild legacy servers based on this manifest
+
+changelog
+---------
+[ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
 
 Usage
 -----
@@ -40,5 +39,6 @@ Plans are to add the following:
  * Data abstraction of IP addresses
   * Us facter to replace any host IP addresses so the modules could be run on any server.
   * Add a file_line option so not all files are managed by templates. This givs much greater flexibility in how to manage code with the manifest creator script.
+  * Add metadata.json file
 
 Please feel free to clone or update 
