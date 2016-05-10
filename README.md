@@ -15,6 +15,7 @@ changelog
 [ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
 [ Created a role that can be run on a puppet master based on the files managed by the script ]
 [ Added the ability to create a "file_line" managed config file in addition to a template ]
+[ catered for hostnames with - and changed them to _ ]
 
 Usage
 -----
