@@ -3,7 +3,7 @@
 # Script to locally create a manifest using puppet resource
 # for local files.
 
-FILES=files.dm
+FILES=files_managed_by_templates.dm
 SERVICES=services_packages.dm
 HOST=`/bin/uname -n`
 
@@ -17,7 +17,7 @@ while read NAME LOCATION; do
   echo > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
   sed -i -e '/mtime/d;/ctime/d;/md5/d;/type/d;/sel/d' $FS/manifests/init.pp
-  sed -i "$ i\  content  => template(\"$NAME/$NAME.erb\")" $FS/manifests/init.pp
+  sed -i "$ i\  content  => template(\"$NAME/$NAME.erb\")," $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
   sed -i "1 i class $NAME {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
@@ -45,6 +45,18 @@ for i in `ls /opt/$HOST`; do echo "puppet apply --modulepath=/opt/$HOST -e \"inc
 sed -i -e '/apply.pp/d' /opt/$HOST/apply.pp
 }
 
+create_role()
+{
+ROLE=/opt/$HOST/role_$HOST/manifest
+mkdir -p $ROLE
+echo "#Add this role to your puppet master. Either in hiera or the tool you use to manage your infrastructure" > $ROLE/init.pp
+for i in `ls /opt/$HOST`; do echo "  include $i" >> $ROLE/init.pp; done
+sed -i -e "/apply.pp/d;/role_$HOST/d" $ROLE/init.pp
+sed -i "2 i class role_$HOST { \n" $ROLE/init.pp
+sed -i 's/-/_/g' $ROLE/init.pp
+echo "}" >> $ROLE/init.pp
+}
+
 replace_hostname_with_facter()
 {
 for i in `find /opt/$HOST/ -name *.erb`
@@ -56,12 +68,10 @@ grep $HOST $i
 done
 }
 
-replace_ipaddress_with_facter()
-{
-# adding soon
-}
 
 directory_framework
 services_packages
 create_apply_file
 replace_hostname_with_facter
+create_role
+
