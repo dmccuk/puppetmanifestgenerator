@@ -33,8 +33,9 @@ while read NAME1 LOCATION1; do
   echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
     do
+      r=$(( $RANDOM % 10 + 40 ))
       FIRST=`echo $line | awk '{print $1}'`
-      echo "  file_line{'/etc/sysctl.conf $FIRST':" >> $FS/manifests/init.pp
+      echo "  file_line{'$LOCATION1 $FIRST.$r':" >> $FS/manifests/init.pp
       echo "    path  => '$LOCATION1'," >> $FS/manifests/init.pp
       echo "    line  => '$line'," >> $FS/manifests/init.pp
       echo "    match => '^$FIRST'," >> $FS/manifests/init.pp
