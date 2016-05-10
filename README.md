@@ -1,7 +1,6 @@
 puppet manifest creator
 =======================
-
-* This is a generic script that creates a complete puppet manifest based on input from the user. Add files, services, packages (adding more soon) to the config files and this script will generate all the required puppet code to either apply locally back to your node or move to a puppet master using the role created when the script runs. It enables quick management of your legacy servers but also provides a way to manage the code once it's been generated.
+This is a generic script that creates a complete puppet manifest based on input from the user. Add files, services, packages (adding more soon) to the config files and this script will generate all the required puppet code to either apply locally back to your node or move to a puppet master using the role created when the script runs. It enables quick management of your legacy servers but also provides a way to manage the code once it's been generated.
 
 Use case
 --------
@@ -15,6 +14,13 @@ changelog
 [ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
 [ Created a role that can be run on a puppet master based on the files managed by the script ]
 [ Added the ability to create a "file_line" managed config file in addition to a template ]
+[ catered for hostnames with - and changed them to _ ]
+
+Dependancies
+------------
+ * To use file_line, download puppetlabs-stdlib to the /opt/HOST_ directory.
+ * Puppet version 3.0 or above
+ * Git
 
 Usage
 -----
@@ -44,3 +50,19 @@ Plans are to add the following:
   * Add metadata.json file to all manifests.
 
 Please feel free to clone or update 
+
+Issues:
+------
+[1]
+If you see this when running puppet apply:
+
+    Error: Evaluation Error: Error while evaluating a Resource Statement, Invalid resource type file_line at /opt/server_name/sshd_config/manifests/init.pp:3:3 on node server1
+
+You need to download and install puppetlabs-stdlib to your working directory. In this case it's /opt/$HOST_. The file_line type requires stdlib is installed.
+
+    # puppet module install -i . -f  puppetlabs-stdlib
+    Notice: Preparing to install into /opt/fedora_22 ...
+    Notice: Downloading from https://forgeapi.puppetlabs.com ...
+    Notice: Installing -- do not interrupt ...
+
+Now run puppet apply again.
