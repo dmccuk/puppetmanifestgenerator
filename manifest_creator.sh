@@ -9,6 +9,11 @@ SERVICES=services_packages.dm
 USERS=users_managed_by_puppet.dm
 HOST=`/bin/uname -n`
 
+clean_up()
+{
+/bin/rm -rf /opt/$HOST/*
+}
+
 hostname_remove_any-()
 {
 # Remove any - from the servername and change them to _
@@ -89,6 +94,7 @@ create_apply_file()
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
 for i in `ls /opt/$HOST_`; do echo "echo $i" >> /opt/$HOST_/apply.pp; echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
 sed -i -e '/apply.pp/d' /opt/$HOST_/apply.pp
+chmod +x /opt/$HOST_/apply.pp
 }
 
 create_role()
@@ -115,17 +121,18 @@ done
 
 manage_users()
 {
+FS="/opt/$HOST_/users"
+mkdir -p $FS/manifests
+echo > $FS/manifests/init.pp
 while read USER; do
-  FS="/opt/$HOST_/users"
-  mkdir -p $FS/manifests
-  echo > $FS/manifests/init.pp
   puppet resource user $USER >> $FS/manifests/init.pp
-  sed -i 's/^/  /' $FS/manifests/init.pp
-  sed -i "1 i class $USER {" $FS/manifests/init.pp
-  echo "}" >> $FS/manifests/init.pp
 done <$USERS
+  sed -i 's/^/  /' $FS/manifests/init.pp
+  sed -i "1 i class users {" $FS/manifests/init.pp
+  echo "}" >> $FS/manifests/init.pp
 }
 
+clean_up
 hostname_remove_any-
 default
 directory_framework

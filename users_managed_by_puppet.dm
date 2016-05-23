@@ -1,2 +1,2 @@
-dmccuk
-puppet
+user1
+user2
