@@ -6,6 +6,7 @@
 FILES=files_managed_by_templates.dm
 FILE_LINE=files_managed_by_file_line.dm
 SERVICES=services_packages.dm
+USERS=users_managed_by_puppet.dm
 HOST=`/bin/uname -n`
 
 hostname_remove_any-()
@@ -86,7 +87,7 @@ done <$SERVICES
 create_apply_file()
 {
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
-for i in `ls /opt/$HOST_`; do echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
+for i in `ls /opt/$HOST_`; do echo "echo $i" >> /opt/$HOST_/apply.pp; echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
 sed -i -e '/apply.pp/d' /opt/$HOST_/apply.pp
 }
 
@@ -112,11 +113,25 @@ grep $HOST $i
 done
 }
 
+manage_users()
+{
+while read USER; do
+  FS="/opt/$HOST_/users"
+  mkdir -p $FS/manifests
+  echo > $FS/manifests/init.pp
+  puppet resource user $USER >> $FS/manifests/init.pp
+  sed -i 's/^/  /' $FS/manifests/init.pp
+  sed -i "1 i class $USER {" $FS/manifests/init.pp
+  echo "}" >> $FS/manifests/init.pp
+done <$USERS
+}
+
 hostname_remove_any-
 default
 directory_framework
 create_file_line_framework
 services_packages
+manage_users
 create_apply_file
 replace_hostname_with_facter
 create_role
