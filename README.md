@@ -1,6 +1,6 @@
 puppet manifest creator
 =======================
-This is a generic script that creates a complete puppet manifest based on input from the user. Add files, services, packages (adding more soon) to the config files and this script will generate all the required puppet code to either apply locally back to your node or move to a puppet master using the role created when the script runs. It enables quick management of your legacy servers but also provides a way to manage the code once it's been generated.
+This is a generic script that creates a complete puppet manifest based on input from the user. Add files, services, packages and users (adding more soon) to the config files as well as control configuration files with file_line (may need to install stdlib). This script will generate all the required puppet code to either apply locally back to your node or move it to a puppet master using the server_name role created when the script runs. It enables quick configuration management of your legacy servers as well as providing a way to manage the code once it's been generated. Generates manifests for all your legacy servers so you can bring them under puppet management.
 
 Use case
 --------
@@ -11,17 +11,18 @@ Use case
 
 Changelog
 ---------
- * [ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by @hostname ]
+ * [ Added hostname factorisation. All .erb files are checked for the hostname of the server and replaced by local fact @hostname ]
  * [ Created a role that can be run on a puppet master based on the files managed by the script ]
  * [ Added the ability to create a "file_line" managed config file in addition to a template ]
  * [ catered for hostnames with - and changed them to _ ]
  * [ Added fstab (mount) as a defualt option. It doesn't need to be added to any configs ]
+ * [ Added option to manage users. Add list of users to the config file to generate a manifets for them ]
 
 Dependencies
 ------------
- * To use file_line, download puppetlabs-stdlib to the /opt/HOST_ directory.
- * Puppet version 3.0 or above
- * Git
+ * Puppet version 3.0 or above.
+ * Git.
+ * Install puppetlabs-stdlib to the /opt/HOST_ directory (may be required).
 
 Usage
 -----
@@ -43,8 +44,7 @@ Development
 Plans are to add the following:
 
   * Data abstraction of IP addresses where appropiate.
-  * Cater for user defined "users" to be captured by the script and added into the manifest.
-  * Add metadata.json file to all manifests.
+   * Add metadata.json file to all manifests.
 
 Issues:
 ------
@@ -60,4 +60,4 @@ You need to download and install puppetlabs-stdlib to your working directory. In
     Notice: Downloading from https://forgeapi.puppetlabs.com ...
     Notice: Installing -- do not interrupt ...
 
-Now run puppet apply again.
+Now run puppet apply or the apply.pp script again.
