@@ -119,7 +119,6 @@ chmod +x /opt/$HOST_/apply.pp
 create_role()
 {
 ROLE=/opt/$HOST_/modules/roles/role_$HOST_/manifest
-ROLE=/opt/$HOST_/role_$HOST_/manifests
 mkdir -p $ROLE
 echo "#Add this role to your puppet master. Either in hiera or the tool you use to manage your infrastructure" > $ROLE/init.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "  include $i" >> $ROLE/init.pp; done
@@ -141,7 +140,7 @@ done
 
 manage_users()
 {
-FS="/opt/$HOST_/users"
+FS="/opt/$HOST_/modules/build/users"
 mkdir -p $FS/manifests
 echo > $FS/manifests/init.pp
 while read USER; do
