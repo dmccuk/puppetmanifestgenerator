@@ -18,11 +18,17 @@ Changelog
  * [ Added fstab (mount) as a defualt option. It doesn't need to be added to any configs ]
  * [ Added option to manage users. Add list of users to the config file to generate a manifets for them ]
 
+Compatibility
+-------------
+The script is written in bash and has been tested on Redhat/Centos versions 6&7. It should work on other OS's but if you would like to contribute I would appreciate your help for a debian based update.
+
 Dependencies
 ------------
  * Puppet version 3.0 or above.
+ * Directory Environments.
  * Git.
- * Install puppetlabs-stdlib to the /opt/HOST_ directory (may be required).
+ * For local "Puppet apply" Install puppetlabs-stdlib to the /opt/HOST_ directory (may be required).
+ * If you are running the code as a role on your puppet master AND you are managing the contents of files using "file_line", you will need to install puppetlabs-stdlib into the module/build directory.
 
 Usage
 -----
@@ -34,17 +40,18 @@ Usage
  3. To run:
       * ./manifest_creator.sh 
  4. The script will run and create the following directory tree:
-      * /opt/$hostname
-      * The manifests will be created under this DIR.
-      * an "apply.pp" script will be created that you can run to apply the maifest back to the server. See apply.pp for more information once run.
-      * A role_$hostname will alos be created so you can move the code to a puppet master and manage via the role.
+      * /opt/$hostname/{manifests,modules,environment.conf}
+      * The ROLE and BUILD directories will be created under modules.
+      * For Local running, an "apply.pp" script will be created so that you can apply the manifest back to the server. See the apply.pp for more information once run.
+ 5. To run the role on a puppet master, move the "$hostname" tree to your puppet master under the /etc/puppet/environment directory.
 
 Development
 ===========
 Plans are to add the following:
 
   * Data abstraction of IP addresses where appropiate.
-   * Add metadata.json file to all manifests.
+  * Add metadata.json file to all manifests.
+  * Include more of the skeleton dirs/files to bring it in line with standard manifests.
 
 Issues:
 ------
@@ -61,3 +68,9 @@ You need to download and install puppetlabs-stdlib to your working directory. In
     Notice: Installing -- do not interrupt ...
 
 Now run puppet apply or the apply.pp script again.
+
+[2]
+If you are running the role from your puuppet master and you can't see any file_line updates in the output, make sure you have installed puppetlabs-stdlib into the directory here: /modules/build.
+
+I appreciate any feedback and contributions.
+
