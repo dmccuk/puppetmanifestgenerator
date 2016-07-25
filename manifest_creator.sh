@@ -112,7 +112,7 @@ create_apply_file()
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "puppet apply --modulepath=/opt/$HOST_/modules/build -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
 for i in `ls /opt/$HOST_`; do echo "echo $i" >> /opt/$HOST_/apply.pp; echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
-sed -i -e '/apply.pp/d' /opt/$HOST_/apply.pp
+sed -i -e '/apply.pp/d;/environment.conf/d;/build/d;/manifests/d;/modules/d' /opt/$HOST_/apply.pp 
 chmod +x /opt/$HOST_/apply.pp
 }
 
