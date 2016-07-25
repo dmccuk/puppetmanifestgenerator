@@ -41,7 +41,7 @@ directory_structure()
 mkdir -p /opt/$HOST_/{manifests,modules}
 mkdir -p /opt/$HOST_/modules/{build,roles}
 cat > /opt/$HOST_/manifests/site.pp << EOF
-notify { ' This is the VM4 server site.pp ': }
+notify { ' This is the $HOST server site.pp ': }
 
 node default {
 
