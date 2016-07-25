@@ -19,7 +19,7 @@ HOST_=`cat /tmp/hostname.dm`
 default()
 {
 # The following are captured by default
-  FSTAB="/opt/$HOST_/fstab"
+  FSTAB="/opt/$HOST_/modules/build/fstab"
   mkdir -p $FSTAB/manifests
   echo > $FSTAB/manifests/init.pp
   puppet resource mount >> $FSTAB/manifests/init.pp
@@ -29,12 +29,30 @@ default()
   echo "}" >> $FSTAB/manifests/init.pp
 }
 
+# Create the directory structure
+directory_structure()
+{
+mkdir -p /opt/$HOST_/{manifests,modules}
+mkdir -p /opt/$HOST_/modules/{build,roles}
+cat > /opt/$HOST_/manifests/site.pp << EOF
+notify { ' This is the VM4 server site.pp ': }
+
+node default {
+
+  include role_$HOST_
+}
+EOF
+cat > /opt/$HOST_/environment.conf << EOF
+modulepath = modules/roles:modules/build
+config_version = '/bin/echo \$environment'
+EOF
+}
 
 # Create the directory framework.
 directory_framework()
 {
 while read NAME LOCATION; do
-  FS="/opt/$HOST_/$NAME"
+  FS="/opt/$HOST_/modules/build/$NAME"
   mkdir -p $FS/{manifests,templates}
   cat $LOCATION > $FS/templates/$NAME".erb"
   echo > $FS/manifests/init.pp
@@ -50,7 +68,7 @@ done <$FILES
 create_file_line_framework()
 {
 while read NAME1 LOCATION1; do
-  FS="/opt/$HOST_/$NAME1"
+  FS="/opt/$HOST_/modules/build/$NAME1"
   mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
@@ -72,7 +90,7 @@ done <$FILE_LINE
 services_packages()
 {
 while read NAME PACKAGE; do
-  FS="/opt/$HOST_/$NAME"
+  FS="/opt/$HOST_/modules/build/$NAME"
   mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
   puppet resource package $PACKAGE >> $FS/manifests/init.pp
@@ -86,16 +104,16 @@ done <$SERVICES
 create_apply_file()
 {
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
-for i in `ls /opt/$HOST_`; do echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
+for i in `ls /opt/$HOST_/modules/build`; do echo "puppet apply --modulepath=/opt/$HOST_/modules/build -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
 sed -i -e '/apply.pp/d' /opt/$HOST_/apply.pp
 }
 
 create_role()
 {
-ROLE=/opt/$HOST_/role_$HOST_/manifest
+ROLE=/opt/$HOST_/modules/roles/role_$HOST_/manifest
 mkdir -p $ROLE
 echo "#Add this role to your puppet master. Either in hiera or the tool you use to manage your infrastructure" > $ROLE/init.pp
-for i in `ls /opt/$HOST_`; do echo "  include $i" >> $ROLE/init.pp; done
+for i in `ls /opt/$HOST_/modules/build`; do echo "  include $i" >> $ROLE/init.pp; done
 sed -i -e "/apply.pp/d;/role_$HOST_/d" $ROLE/init.pp
 sed -i "2 i class role_$HOST_ { \n" $ROLE/init.pp
 echo "}" >> $ROLE/init.pp
@@ -103,7 +121,7 @@ echo "}" >> $ROLE/init.pp
 
 replace_hostname_with_facter()
 {
-for i in `find /opt/$HOST_/ -name *.erb`
+for i in `find /opt/$HOST_/modules/build/ -name *.erb`
 do
 grep $HOST $i
   if [ $? == 0 ] ; then
@@ -114,6 +132,7 @@ done
 
 hostname_remove_any-
 default
+directory_structure
 directory_framework
 create_file_line_framework
 services_packages
