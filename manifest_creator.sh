@@ -6,7 +6,13 @@
 FILES=files_managed_by_templates.dm
 FILE_LINE=files_managed_by_file_line.dm
 SERVICES=services_packages.dm
+USERS=users_managed_by_puppet.dm
 HOST=`/bin/uname -n`
+
+clean_up()
+{
+/bin/rm -rf /opt/$HOST/*
+}
 
 hostname_remove_any-()
 {
@@ -105,12 +111,15 @@ create_apply_file()
 {
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "puppet apply --modulepath=/opt/$HOST_/modules/build -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
+for i in `ls /opt/$HOST_`; do echo "echo $i" >> /opt/$HOST_/apply.pp; echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
 sed -i -e '/apply.pp/d' /opt/$HOST_/apply.pp
+chmod +x /opt/$HOST_/apply.pp
 }
 
 create_role()
 {
 ROLE=/opt/$HOST_/modules/roles/role_$HOST_/manifest
+ROLE=/opt/$HOST_/role_$HOST_/manifests
 mkdir -p $ROLE
 echo "#Add this role to your puppet master. Either in hiera or the tool you use to manage your infrastructure" > $ROLE/init.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "  include $i" >> $ROLE/init.pp; done
@@ -130,12 +139,27 @@ grep $HOST $i
 done
 }
 
+manage_users()
+{
+FS="/opt/$HOST_/users"
+mkdir -p $FS/manifests
+echo > $FS/manifests/init.pp
+while read USER; do
+  puppet resource user $USER >> $FS/manifests/init.pp
+done <$USERS
+  sed -i 's/^/  /' $FS/manifests/init.pp
+  sed -i "1 i class users {" $FS/manifests/init.pp
+  echo "}" >> $FS/manifests/init.pp
+}
+
+clean_up
 hostname_remove_any-
 default
 directory_structure
 directory_framework
 create_file_line_framework
 services_packages
+manage_users
 create_apply_file
 replace_hostname_with_facter
 create_role

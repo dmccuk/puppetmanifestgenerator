@@ -1,3 +1,2 @@
-httpd httpd
 ksh   ksh
-golang golang
+httpd httpd
