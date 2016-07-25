@@ -48,6 +48,11 @@ node default {
   include role_$HOST_
 }
 EOF
+}
+
+# create the environment.conf file
+create_environment_conf()
+{
 cat > /opt/$HOST_/environment.conf << EOF
 modulepath = modules/roles:modules/build
 config_version = '/bin/echo \$environment'
@@ -111,8 +116,8 @@ create_apply_file()
 {
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "puppet apply --modulepath=/opt/$HOST_/modules/build -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
-for i in `ls /opt/$HOST_`; do echo "echo $i" >> /opt/$HOST_/apply.pp; echo "puppet apply --modulepath=/opt/$HOST_ -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
-sed -i -e '/apply.pp/d;/environment.conf/d;/build/d;/manifests/d;/modules/d' /opt/$HOST_/apply.pp 
+#sed -i -e '/apply.pp/d;/environment.conf/d;/manifests/d' /opt/$HOST_/apply.pp
+sed -i -e '/apply.pp/d' /opt/$HOST_/apply.pp
 chmod +x /opt/$HOST_/apply.pp
 }
 
@@ -160,5 +165,6 @@ create_file_line_framework
 services_packages
 manage_users
 create_apply_file
+create_environment_conf
 replace_hostname_with_facter
 create_role
