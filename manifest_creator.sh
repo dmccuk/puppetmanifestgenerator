@@ -84,7 +84,7 @@ while read NAME1 LOCATION1; do
   echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
     do
-      r=$(( $RANDOM % 20 + 50 ))
+      r=$RANDOM
       FIRST=`echo $line | awk '{print $1}'`
       echo "  file_line{'$LOCATION1 $FIRST.$r':" >> $FS/manifests/init.pp
       echo "    path  => '$LOCATION1'," >> $FS/manifests/init.pp
@@ -123,7 +123,7 @@ chmod +x /opt/$HOST_/apply.pp
 
 create_role()
 {
-ROLE=/opt/$HOST_/modules/roles/role_$HOST_/manifest
+ROLE=/opt/$HOST_/modules/roles/role_$HOST_/manifests
 mkdir -p $ROLE
 echo "#Add this role to your puppet master. Either in hiera or the tool you use to manage your infrastructure" > $ROLE/init.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "  include $i" >> $ROLE/init.pp; done
