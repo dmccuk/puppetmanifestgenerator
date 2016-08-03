@@ -3,7 +3,7 @@
 # Script to locally create a manifest using puppet resource
 # for local files.
 
-FILE_HOME=/home/dmccuk/scripts
+FILE_HOME=/tmp
 FILES=$FILE_HOME/files_managed_by_templates.dm
 FILE_LINE=$FILE_HOME/files_managed_by_file_line.dm
 SERVICES=$FILE_HOME/services_packages.dm
@@ -30,6 +30,7 @@ default()
 cd /opt/$HOST_/modules/build
 MODULE=$PUPPET_MOD_NAME-fstab
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
+mv $MODULE fstab
 FSTAB="/opt/$HOST_/modules/build/fstab"
 echo > $FSTAB/manifests/init.pp
 puppet resource mount >> $FSTAB/manifests/init.pp
@@ -70,8 +71,8 @@ cd /opt/$HOST_/modules/build
 while read NAME LOCATION; do
   MODULE=$PUPPET_MOD_NAME-$NAME
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
+  mv $MODULE $NAME
   FS="/opt/$HOST_/modules/build/$NAME"
-  mkdir -p $FS/templates
   cat $LOCATION > $FS/templates/$NAME".erb"
   echo > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
@@ -89,6 +90,7 @@ cd /opt/$HOST_/modules/build
   while read NAME1 LOCATION1; do
   MODULE=$PUPPET_MOD_NAME-$NAME1
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
+  mv $MODULE $NAME1
   FS="/opt/$HOST_/modules/build/$NAME1"
   mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
@@ -114,8 +116,9 @@ cd /opt/$HOST_/modules/build
 while read NAME PACKAGE; do
   MODULE=$PUPPET_MOD_NAME-$NAME
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
+  mv $MODULE $NAME
   FS="/opt/$HOST_/modules/build/$NAME"
-  mkdir -p $FS/manifests
+  #mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
   puppet resource package $PACKAGE >> $FS/manifests/init.pp
   puppet resource service $NAME >> $FS/manifests/init.pp
@@ -160,6 +163,7 @@ manage_users()
 {
 MODULE=$PUPPET_MOD_NAME-users
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
+mv $MODULE users
 while read USER; do
   echo > $FS/manifests/init.pp
   puppet resource user $USER >> $FS/manifests/init.pp
