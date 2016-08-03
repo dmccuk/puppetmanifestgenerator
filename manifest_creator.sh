@@ -30,7 +30,7 @@ default()
 cd /opt/$HOST_/modules/build
 MODULE=$PUPPET_MOD_NAME-fstab
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
-mv $MODULE fstab
+mv $MODULE fstab 2> /dev/null
 FSTAB="/opt/$HOST_/modules/build/fstab"
 echo > $FSTAB/manifests/init.pp
 puppet resource mount >> $FSTAB/manifests/init.pp
@@ -71,7 +71,7 @@ cd /opt/$HOST_/modules/build
 while read NAME LOCATION; do
   MODULE=$PUPPET_MOD_NAME-$NAME
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
-  mv $MODULE $NAME
+  mv $MODULE $NAME 2> /dev/null
   FS="/opt/$HOST_/modules/build/$NAME"
   mkdir -p $FS/templates
   cat $LOCATION > $FS/templates/$NAME".erb"
@@ -91,7 +91,7 @@ cd /opt/$HOST_/modules/build
   while read NAME1 LOCATION1; do
   MODULE=$PUPPET_MOD_NAME-$NAME1
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
-  mv $MODULE $NAME1
+  mv $MODULE $NAME1 2> /dev/null
   FS="/opt/$HOST_/modules/build/$NAME1"
   echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
@@ -116,7 +116,7 @@ cd /opt/$HOST_/modules/build
 while read NAME PACKAGE; do
   MODULE=$PUPPET_MOD_NAME-$NAME
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
-  mv $MODULE $NAME
+  mv $MODULE $NAME 2> /dev/null
   FS="/opt/$HOST_/modules/build/$NAME"
   echo > $FS/manifests/init.pp
   puppet resource package $PACKAGE >> $FS/manifests/init.pp
@@ -160,10 +160,12 @@ done
 
 manage_users()
 {
+cd /opt/$HOST_/modules/build
 MODULE=$PUPPET_MOD_NAME-users
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
-mv $MODULE users
+mv $MODULE users 2> /dev/null
 while read USER; do
+  FS="/opt/$HOST_/modules/build/users"
   echo > $FS/manifests/init.pp
   puppet resource user $USER >> $FS/manifests/init.pp
 done <$USERS
