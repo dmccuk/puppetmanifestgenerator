@@ -3,11 +3,13 @@
 # Script to locally create a manifest using puppet resource
 # for local files.
 
-FILES=files_managed_by_templates.dm
-FILE_LINE=files_managed_by_file_line.dm
-SERVICES=services_packages.dm
-USERS=users_managed_by_puppet.dm
+FILE_HOME=/home/dmccuk/scripts
+FILES=$FILE_HOME/files_managed_by_templates.dm
+FILE_LINE=$FILE_HOME/files_managed_by_file_line.dm
+SERVICES=$FILE_HOME/services_packages.dm
+USERS=$FILE_HOME/users_managed_by_puppet.dm
 HOST=`/bin/uname -n`
+PUPPET_MOD_NAME=`/bin/uname -n | awk -F- '{print $1}'`
 
 clean_up()
 {
@@ -25,14 +27,16 @@ HOST_=`cat /tmp/hostname.dm`
 default()
 {
 # The following are captured by default
-  FSTAB="/opt/$HOST_/modules/build/fstab"
-  mkdir -p $FSTAB/manifests
-  echo > $FSTAB/manifests/init.pp
-  puppet resource mount >> $FSTAB/manifests/init.pp
-  sed -i 's/^/  /' $FSTAB/manifests/init.pp
-  sed -i "1 i class fstab {" $FSTAB/manifests/init.pp
-  sed -i -e '/binfmt_misc/,+3d' $FSTAB/manifests/init.pp
-  echo "}" >> $FSTAB/manifests/init.pp
+cd /opt/$HOST_/modules/build
+MODULE=$PUPPET_MOD_NAME-fstab
+echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
+FSTAB="/opt/$HOST_/modules/build/fstab"
+echo > $FSTAB/manifests/init.pp
+puppet resource mount >> $FSTAB/manifests/init.pp
+sed -i 's/^/  /' $FSTAB/manifests/init.pp
+sed -i "1 i class fstab {" $FSTAB/manifests/init.pp
+sed -i -e '/binfmt_misc/,+3d' $FSTAB/manifests/init.pp
+echo "}" >> $FSTAB/manifests/init.pp
 }
 
 # Create the directory structure
@@ -59,12 +63,15 @@ config_version = '/bin/echo \$environment'
 EOF
 }
 
-# Create the directory framework.
-directory_framework()
+# Create the templates.
+create_templates()
 {
+cd /opt/$HOST_/modules/build
 while read NAME LOCATION; do
+  MODULE=$PUPPET_MOD_NAME-$NAME
+  echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   FS="/opt/$HOST_/modules/build/$NAME"
-  mkdir -p $FS/{manifests,templates}
+  mkdir -p $FS/templates
   cat $LOCATION > $FS/templates/$NAME".erb"
   echo > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
@@ -78,7 +85,10 @@ done <$FILES
 
 create_file_line_framework()
 {
-while read NAME1 LOCATION1; do
+cd /opt/$HOST_/modules/build
+  while read NAME1 LOCATION1; do
+  MODULE=$PUPPET_MOD_NAME-$NAME1
+  echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   FS="/opt/$HOST_/modules/build/$NAME1"
   mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
@@ -100,7 +110,10 @@ done <$FILE_LINE
 
 services_packages()
 {
+cd /opt/$HOST_/modules/build
 while read NAME PACKAGE; do
+  MODULE=$PUPPET_MOD_NAME-$NAME
+  echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   FS="/opt/$HOST_/modules/build/$NAME"
   mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
@@ -145,10 +158,10 @@ done
 
 manage_users()
 {
-FS="/opt/$HOST_/modules/build/users"
-mkdir -p $FS/manifests
-echo > $FS/manifests/init.pp
+MODULE=$PUPPET_MOD_NAME-users
+echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
 while read USER; do
+  echo > $FS/manifests/init.pp
   puppet resource user $USER >> $FS/manifests/init.pp
 done <$USERS
   sed -i 's/^/  /' $FS/manifests/init.pp
@@ -158,9 +171,9 @@ done <$USERS
 
 clean_up
 hostname_remove_any-
-default
 directory_structure
-directory_framework
+default
+create_templates
 create_file_line_framework
 services_packages
 manage_users
