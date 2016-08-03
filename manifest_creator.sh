@@ -73,6 +73,7 @@ while read NAME LOCATION; do
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   mv $MODULE $NAME
   FS="/opt/$HOST_/modules/build/$NAME"
+  mkdir -p $FS/templates
   cat $LOCATION > $FS/templates/$NAME".erb"
   echo > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
@@ -92,7 +93,6 @@ cd /opt/$HOST_/modules/build
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   mv $MODULE $NAME1
   FS="/opt/$HOST_/modules/build/$NAME1"
-  mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
     do
@@ -118,7 +118,6 @@ while read NAME PACKAGE; do
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   mv $MODULE $NAME
   FS="/opt/$HOST_/modules/build/$NAME"
-  #mkdir -p $FS/manifests
   echo > $FS/manifests/init.pp
   puppet resource package $PACKAGE >> $FS/manifests/init.pp
   puppet resource service $NAME >> $FS/manifests/init.pp
