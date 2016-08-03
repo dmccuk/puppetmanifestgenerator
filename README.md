@@ -1,5 +1,5 @@
 puppet manifest generator
-=======================I
+=========================
 This is a generic script that creates a complete puppet manifest based on input from the user. Add files, services, packages and users (adding more soon) to the config files as well as control configuration files with file_line (may need to install stdlib). This script will generate all the required puppet code to either apply locally back to your node or move it to a puppet master using the server_name role created when the script runs. It enables quick configuration management of your legacy servers as well as providing a way to manage the code once it's been generated. Generates manifests for all your legacy servers so you can bring them under puppet management.
 
 Use case
