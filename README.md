@@ -34,7 +34,7 @@ Dependencies
 
 Usage
 -----
- 1. Clone the Repo in /tmp - git clone https://github.com/dmccuk/puppet_manifest_generator.git
+ 1. Clone the Repo in /tmp - git clone https://github.com/dmccuk/puppetmanifestgenerator.git
  2. cd into the cloned directory. Examples in each of the files described below:
       * Update "files_managed_by_templates.dm" with the name and location of what you want to manage.
       * Update "services_packages.dm" with the serivce name and the package name.
