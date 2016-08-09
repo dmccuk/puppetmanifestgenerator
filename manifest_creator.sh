@@ -3,7 +3,7 @@
 # Script to locally create a manifest using puppet resource
 # for local files.
 
-FILE_HOME=/tmp/puppet_manifest_generator
+FILE_HOME=/tmp/puppetmanifestgenerator
 FILES=$FILE_HOME/files_managed_by_templates.dm
 FILE_LINE=$FILE_HOME/files_managed_by_file_line.dm
 SERVICES=$FILE_HOME/services_packages.dm
