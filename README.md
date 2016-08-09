@@ -1,5 +1,5 @@
-puppet manifest creator
-=======================
+puppet manifest generator
+=========================
 This is a generic script that creates a complete puppet manifest based on input from the user. Add files, services, packages and users (adding more soon) to the config files as well as control configuration files with file_line (may need to install stdlib). This script will generate all the required puppet code to either apply locally back to your node or move it to a puppet master using the server_name role created when the script runs. It enables quick configuration management of your legacy servers as well as providing a way to manage the code once it's been generated. Generates manifests for all your legacy servers so you can bring them under puppet management.
 
 Use case
@@ -34,7 +34,7 @@ Dependencies
 
 Usage
 -----
- 1. Clone the Repo in /tmp - git clone https://github.com/dmccuk/puppet_manifest_generator.git
+ 1. Clone the Repo in /tmp - git clone https://github.com/dmccuk/puppetmanifestgenerator.git
  2. cd into the cloned directory. Examples in each of the files described below:
       * Update "files_managed_by_templates.dm" with the name and location of what you want to manage.
       * Update "services_packages.dm" with the serivce name and the package name.
@@ -60,7 +60,7 @@ If you see this when running puppet apply:
 
     Error: Evaluation Error: Error while evaluating a Resource Statement, Invalid resource type file_line at /opt/server_name/sshd_config/manifests/init.pp:3:3 on node server1
 
-You need to download and install puppetlabs-stdlib to your working directory. In this case it's /opt/$HOST_. The file_line type requires stdlib is installed.
+You need to download and install puppetlabs-stdlib to your working directory. In this case it's /opt/$HOST_/modules/build. The file_line type requires stdlib is installed.
 
     # puppet module install -i . -f  puppetlabs-stdlib
     Notice: Preparing to install into /opt/fedora_22 ...
@@ -70,7 +70,7 @@ You need to download and install puppetlabs-stdlib to your working directory. In
 Now run puppet apply or the apply.pp script again.
 
 [2]
-If you are running the role from your puuppet master and you can't see any file_line updates in the output, make sure you have installed puppetlabs-stdlib into the directory here: /modules/build.
+If you are running the role from your puppet master and you can't see any file_line updates in the output, make sure you have installed puppetlabs-stdlib into the directory here: /modules/build.
 
 I appreciate any feedback and contributions.
 
