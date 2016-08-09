@@ -8,8 +8,8 @@ FILES=$FILE_HOME/files_managed_by_templates.dm
 FILE_LINE=$FILE_HOME/files_managed_by_file_line.dm
 SERVICES=$FILE_HOME/services_packages.dm
 USERS=$FILE_HOME/users_managed_by_puppet.dm
-HOST=`/bin/uname -n`
-PUPPET_MOD_NAME=`/bin/uname -n | awk -F- '{print $1}'`
+HOST=`/bin/hostname -s`
+PUPPET_MOD_NAME=`/bin/hostname -s | awk -F- '{print $1}'`
 
 clean_up()
 {
