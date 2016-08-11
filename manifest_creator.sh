@@ -24,6 +24,12 @@ sed -i 's/-/_/g' /tmp/hostname.dm
 HOST_=`cat /tmp/hostname.dm`
 }
 
+capture_facts()
+{
+FACTER=`which facter`
+$FACTER -p > /opt/$HOST_/facts.dm
+}
+
 default()
 {
 # The following are captured by default
@@ -186,3 +192,4 @@ create_apply_file
 create_environment_conf
 replace_hostname_with_facter
 create_role
+capture_facts
