@@ -100,7 +100,7 @@ cd /opt/$HOST_/modules/build
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   mv $MODULE $NAME1 2> /dev/null
   FS="/opt/$HOST_/modules/build/$NAME1"
-  echo "#" > $FS/manifests/init.pp
+  echo > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
     do
       r=$RANDOM
@@ -112,7 +112,7 @@ cd /opt/$HOST_/modules/build
       echo "  }" >> $FS/manifests/init.pp
       echo "" >> $FS/manifests/init.pp
     done
-  sed -i "2 i class $NAME1 {" $FS/manifests/init.pp
+  sed -i "1 i class $NAME1 {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
 done <$FILE_LINE
 }
