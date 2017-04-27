@@ -52,6 +52,7 @@ directory_structure()
 mkdir -p /opt/$HOST_/{manifests,modules}
 mkdir -p /opt/$HOST_/modules/{build,roles}
 cat > /opt/$HOST_/manifests/site.pp << EOF
+#
 notify { ' This is the $HOST server site.pp ': }
 
 node default {
@@ -81,10 +82,10 @@ while read NAME LOCATION; do
   FS="/opt/$HOST_/modules/build/$NAME"
   mkdir -p $FS/templates
   cat $LOCATION > $FS/templates/$NAME".erb"
-  echo > $FS/manifests/init.pp
+  echo "#" > $FS/manifests/init.pp
   puppet resource file $LOCATION >> $FS/manifests/init.pp
   sed -i -e '/mtime/d;/ctime/d;/md5/d;/type/d;/sel/d' $FS/manifests/init.pp
-  sed -i "$ i\  content  => template(\"$NAME/$NAME.erb\")," $FS/manifests/init.pp
+  sed -i "$ i\  content => template(\'$NAME/$NAME.erb\')," $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
   sed -i "1 i class $NAME {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
@@ -99,7 +100,7 @@ cd /opt/$HOST_/modules/build
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   mv $MODULE $NAME1 2> /dev/null
   FS="/opt/$HOST_/modules/build/$NAME1"
-  echo > $FS/manifests/init.pp
+  echo "#" > $FS/manifests/init.pp
   grep -vE '^(\s*$|#)' $LOCATION1| while read line
     do
       r=$RANDOM
@@ -124,7 +125,7 @@ while read NAME PACKAGE; do
   echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
   mv $MODULE $NAME 2> /dev/null
   FS="/opt/$HOST_/modules/build/$NAME"
-  echo > $FS/manifests/init.pp
+  echo "#" > $FS/manifests/init.pp
   puppet resource package $PACKAGE >> $FS/manifests/init.pp
   puppet resource service $NAME >> $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
@@ -172,7 +173,7 @@ echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
 mv $MODULE users 2> /dev/null
 while read USER; do
   FS="/opt/$HOST_/modules/build/users"
-  echo > $FS/manifests/init.pp
+  echo "#" > $FS/manifests/init.pp
   puppet resource user $USER >> $FS/manifests/init.pp
 done <$USERS
   sed -i 's/^/  /' $FS/manifests/init.pp
