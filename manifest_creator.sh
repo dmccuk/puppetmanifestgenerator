@@ -38,10 +38,10 @@ MODULE=$PUPPET_MOD_NAME-fstab
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
 mv $MODULE fstab 2> /dev/null
 FSTAB="/opt/$HOST_/modules/build/fstab"
-echo > $FSTAB/manifests/init.pp
+echo "#" > $FSTAB/manifests/init.pp
 puppet resource mount >> $FSTAB/manifests/init.pp
 sed -i 's/^/  /' $FSTAB/manifests/init.pp
-sed -i "1 i class fstab {" $FSTAB/manifests/init.pp
+sed -i "2 i class fstab {" $FSTAB/manifests/init.pp
 sed -i -e '/binfmt_misc/,+3d' $FSTAB/manifests/init.pp
 echo "}" >> $FSTAB/manifests/init.pp
 }
@@ -87,7 +87,7 @@ while read NAME LOCATION; do
   sed -i -e '/mtime/d;/ctime/d;/md5/d;/type/d;/sel/d' $FS/manifests/init.pp
   sed -i "$ i\  content => template(\'$NAME/$NAME.erb\')," $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
-  sed -i "1 i class $NAME {" $FS/manifests/init.pp
+  sed -i "2 i class $NAME {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
 done <$FILES
 }
@@ -112,7 +112,7 @@ cd /opt/$HOST_/modules/build
       echo "  }" >> $FS/manifests/init.pp
       echo "" >> $FS/manifests/init.pp
     done
-  sed -i "1 i class $NAME1 {" $FS/manifests/init.pp
+  sed -i "2 i class $NAME1 {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
 done <$FILE_LINE
 }
@@ -129,7 +129,7 @@ while read NAME PACKAGE; do
   puppet resource package $PACKAGE >> $FS/manifests/init.pp
   puppet resource service $NAME >> $FS/manifests/init.pp
   sed -i 's/^/  /' $FS/manifests/init.pp
-  sed -i "1 i class $NAME {" $FS/manifests/init.pp
+  sed -i "2 i class $NAME {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
 done <$SERVICES
 }
@@ -177,7 +177,7 @@ while read USER; do
   puppet resource user $USER >> $FS/manifests/init.pp
 done <$USERS
   sed -i 's/^/  /' $FS/manifests/init.pp
-  sed -i "1 i class users {" $FS/manifests/init.pp
+  sed -i "2 i class users {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
 }
 
