@@ -11,7 +11,29 @@ SERVICES=$FILE_HOME/services_packages.dm
 USERS=$FILE_HOME/users_managed_by_puppet.dm
 HOST=`/bin/hostname -s`
 PUPPET_MOD_NAME=`/bin/hostname -s | awk -F- '{print $1}'`
+DIR=`pwd`
 
+root_only()
+{
+echo " (*) Checking this script is being run as the root user"
+if [ "$EUID" -ne 0 ]
+  then echo " (*) FAILED: Please run as root"
+  exit
+else
+  echo " (*) PASS"
+fi
+}
+
+tmp_check()
+{
+echo " (*) Check that /tmp is the current directory"
+if [ "$DIR" == "/tmp" ]
+  then echo " (*) PASS"
+  else
+    echo " (*) FAILED: Please run from /tmp"
+    exit
+fi
+}
 clean_up()
 {
 echo " (*) Remove previous target directory"
@@ -198,9 +220,11 @@ done <$USERS
 
 complete()
 {
-echo " (*) Puppet files created"
+echo " (*) Puppet files created. Check under /opt/$HOST_"
 }
 
+root_only
+tmp_check
 clean_up
 hostname_remove_any-
 directory_structure
