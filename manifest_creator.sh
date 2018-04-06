@@ -1,12 +1,9 @@
 #!/bin/bash
-#set -x
+#set -x #unhash for debug
 
 # Script to locally create a manifest using puppet resource
 # for local files.
 
-
-#LOCALDIR=`pwd`
-#FILE_HOME=$LOCALDIR/puppetmanifestgenerator
 FILE_HOME=/tmp/puppetmanifestgenerator
 FILES=$FILE_HOME/files_managed_by_templates.dm
 FILE_LINE=$FILE_HOME/files_managed_by_file_line.dm
