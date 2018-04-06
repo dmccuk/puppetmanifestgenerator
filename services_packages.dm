@@ -1,2 +1,1 @@
-ksh   ksh
-httpd httpd
+nginx nginx
