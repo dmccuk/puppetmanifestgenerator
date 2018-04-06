@@ -1,8 +1,12 @@
 #!/bin/bash
+#set -x
 
 # Script to locally create a manifest using puppet resource
 # for local files.
 
+
+#LOCALDIR=`pwd`
+#FILE_HOME=$LOCALDIR/puppetmanifestgenerator
 FILE_HOME=/tmp/puppetmanifestgenerator
 FILES=$FILE_HOME/files_managed_by_templates.dm
 FILE_LINE=$FILE_HOME/files_managed_by_file_line.dm
@@ -13,11 +17,14 @@ PUPPET_MOD_NAME=`/bin/hostname -s | awk -F- '{print $1}'`
 
 clean_up()
 {
-/bin/rm -rf /opt/$HOST/*
+echo " (*) Remove previous target directory"
+hostname_remove_any-
+/bin/rm -rf /opt/$HOST_
 }
 
 hostname_remove_any-()
 {
+echo " (*) Remove any '-' and change them to '_'"
 # Remove any - from the servername and change them to _
 echo $HOST > /tmp/hostname.dm
 sed -i 's/-/_/g' /tmp/hostname.dm
@@ -26,13 +33,15 @@ HOST_=`cat /tmp/hostname.dm`
 
 capture_facts()
 {
+echo " (*) Capture all the facts from the server"
 FACTER=`which facter`
-$FACTER -p > /opt/$HOST_/facts.dm
+$FACTER > /opt/$HOST_/facts.dm
 }
 
 default()
 {
 # The following are captured by default
+echo " (*) Capture fstab info by default"
 cd /opt/$HOST_/modules/build
 MODULE=$PUPPET_MOD_NAME-fstab
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
@@ -49,6 +58,7 @@ echo "}" >> $FSTAB/manifests/init.pp
 # Create the directory structure
 directory_structure()
 {
+echo " (*) Create the directory Structure"
 mkdir -p /opt/$HOST_/{manifests,modules}
 mkdir -p /opt/$HOST_/modules/{build,roles}
 cat > /opt/$HOST_/manifests/site.pp << EOF
@@ -57,11 +67,12 @@ notify { ' This is the $HOST server site.pp ': }
 node default {
 
   include role_$HOST_
-}
+  }
 EOF
 }
 
 # create the environment.conf file
+echo " (*) Create the environment config file"
 create_environment_conf()
 {
 cat > /opt/$HOST_/environment.conf << EOF
@@ -73,6 +84,7 @@ EOF
 # Create the templates.
 create_templates()
 {
+echo " (*) Creating templates"
 cd /opt/$HOST_/modules/build
 while read NAME LOCATION; do
   MODULE=$PUPPET_MOD_NAME-$NAME
@@ -93,6 +105,7 @@ done <$FILES
 
 create_file_line_framework()
 {
+echo " (*) Creating file_line files"
 cd /opt/$HOST_/modules/build
   while read NAME1 LOCATION1; do
   MODULE=$PUPPET_MOD_NAME-$NAME1
@@ -118,6 +131,7 @@ done <$FILE_LINE
 
 services_packages()
 {
+echo " (*) Creating service and package files"
 cd /opt/$HOST_/modules/build
 while read NAME PACKAGE; do
   MODULE=$PUPPET_MOD_NAME-$NAME
@@ -135,6 +149,7 @@ done <$SERVICES
 
 create_apply_file()
 {
+echo " (*) Create a local apply file"
 echo "#Execute this file to apply back the manifest locally" > /opt/$HOST_/apply.pp
 for i in `ls /opt/$HOST_/modules/build`; do echo "puppet apply --modulepath=/opt/$HOST_/modules/build -e \"include $i\"" >> /opt/$HOST_/apply.pp; done
 #sed -i -e '/apply.pp/d;/environment.conf/d;/manifests/d' /opt/$HOST_/apply.pp
@@ -144,6 +159,7 @@ chmod +x /opt/$HOST_/apply.pp
 
 create_role()
 {
+echo " (*) Create the role"
 ROLE=/opt/$HOST_/modules/roles/role_$HOST_/manifests
 mkdir -p $ROLE
 echo "#Add this role to your puppet master. Either in hiera or the tool you use to manage your infrastructure" > $ROLE/init.pp
@@ -155,6 +171,7 @@ echo "}" >> $ROLE/init.pp
 
 replace_hostname_with_facter()
 {
+echo " (*) Change any hostnames into ::hostname"
 for i in `find /opt/$HOST_/modules/build/ -name *.erb`
 do
 grep $HOST $i
@@ -166,6 +183,7 @@ done
 
 manage_users()
 {
+echo " (*) Create the user management files"
 cd /opt/$HOST_/modules/build
 MODULE=$PUPPET_MOD_NAME-users
 echo -e "\n\n\n\n\n\n\n" |puppet module generate $MODULE > /dev/null
@@ -178,6 +196,11 @@ done <$USERS
   sed -i 's/^/  /' $FS/manifests/init.pp
   sed -i "1 i class users {" $FS/manifests/init.pp
   echo "}" >> $FS/manifests/init.pp
+}
+
+complete()
+{
+echo " (*) Puppet files created"
 }
 
 clean_up
@@ -193,3 +216,4 @@ create_environment_conf
 replace_hostname_with_facter
 create_role
 capture_facts
+complete
