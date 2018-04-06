@@ -26,11 +26,11 @@ The script is written in bash and has been tested on Redhat/Centos versions 6&7.
 
 Dependencies
 ------------
- * Puppet version 3.0 or above.
+ * Puppet version 3.0 or above (Tested with puppet 4 & 5).
  * Directory Environments.
  * Git.
- * Clone it into the /tmp directory. If not, please update the FILE_HOME variable with your install location.
- * For local "Puppet apply" Install puppetlabs-stdlib to the /opt/HOST_/modules/build directory (may be required).
+ * Clone it into the /tmp directory (The script will check for this). If not, please update the FILE_HOME variable with your install location.
+ * For local "Puppet apply" Install puppetlabs-stdlib to the /opt/HOST_/modules/build directory.
  * If you are running the code as a role on your puppet master AND you are managing the contents of files using "file_line", you will need to install puppetlabs-stdlib into the module/build directory.
 
 Usage
@@ -47,6 +47,44 @@ Usage
       * The ROLE and BUILD directories will be created under modules.
       * For Local running, an "apply.pp" script will be created so that you can apply the manifest back to the server. See the apply.pp for more information once run.
  5. To run the role on a puppet master, move the "$hostname" tree to your puppet master under the /etc/puppet/environment directory.
+
+Running
+-----
+This is what a typical run from your node will look like:
+````
+[root@fed-25 tmp]# ./puppetmanifestgenerator/manifest_creator.sh 
+ (*) Create the environment config file
+ (*) Checking this script is being run as the root user
+ (*) PASS
+ (*) Check that /tmp is the current directory
+ (*) PASS
+ (*) Remove previous target directory
+ (*) Remove any '-' and change them to '_'
+ (*) Remove any '-' and change them to '_'
+ (*) Create the directory Structure
+ (*) Capture fstab info by default
+ (*) Creating templates
+ (*) Creating file_line files
+ (*) Creating service and package files
+ (*) Create the user management files
+ (*) Create a local apply file
+ (*) Change any hostnames into ::hostname
+ (*) Create the role
+ (*) Capture all the facts from the server
+ (*) Puppet files created. Check under /opt/fed_25
+````
+The run will create a /opt/HOSTNAME directory with the code:
+````
+[root@fed-25 tmp]# ls -al /opt/fed_25/
+total 36
+drwxr-xr-x. 4 root root  4096 Apr  6 18:17 .
+drwxr-xr-x. 4 root root  4096 Apr  6 18:17 ..
+-rwxr-xr-x. 1 root root   564 Apr  6 18:17 apply.pp
+-rw-r--r--. 1 root root    83 Apr  6 18:17 environment.conf
+-rw-r--r--. 1 root root 11231 Apr  6 18:17 facts.dm
+drwxr-xr-x. 2 root root  4096 Apr  6 18:17 manifests
+drwxr-xr-x. 4 root root  4096 Apr  6 18:17 modules
+````
 
 Development
 ===========
