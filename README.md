@@ -41,7 +41,7 @@ Usage
       * Update "services_packages.dm" with the serivce name and the package name.
       * update "files_managed_by_file_line.dm" with the files you wish to create a "file_line" output for.
  3. To run:
-      * ./manifest_creator.sh 
+      *  /tmp/puppetmanifestgenerator/manifest_creator.sh
  4. The script will run and create the following directory tree:
       * /opt/$hostname/{manifests,modules,environment.conf}
       * The ROLE and BUILD directories will be created under modules.
